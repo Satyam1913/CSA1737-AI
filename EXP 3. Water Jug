@@ -1,0 +1,38 @@
+from collections import deque
+
+def water_jug(cap_a, cap_b, goal):
+    start, visited, path = (0, 0), set(), {}
+    queue = deque([start])
+
+    while queue:
+        a, b = queue.popleft()
+        if (a, b) in visited: continue
+        visited.add((a, b))
+        if a == goal or b == goal:
+            steps = [(a, b)]
+            while (a, b) in path:
+                a, b = path[(a, b)]
+                steps.append((a, b))
+            return steps[::-1]
+
+        next_states = [
+            (cap_a, b), (a, cap_b), (0, b), (a, 0),
+            (min(a + b, cap_a), b - (cap_a - a) if b - (cap_a - a) >= 0 else 0),
+            (a - (cap_b - b) if a - (cap_b - b) >= 0 else 0, min(a + b, cap_b))
+        ]
+        for state in next_states:
+            if state not in visited:
+                queue.append(state)
+                path[state] = (a, b)
+
+    return None
+
+# Example: A = 4L, B = 3L, Goal = 2L
+result = water_jug(4, 3, 2)
+if result:
+    print("Initial State: (0, 0)")
+    print(f"Goal: {result[-1]}\nSteps:")
+    for i, (a, b) in enumerate(result):
+        print(f"Step {i}: Jug A = {a}L, Jug B = {b}L")
+else:
+    print("No solution.")
